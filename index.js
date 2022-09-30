@@ -1,5 +1,4 @@
 require("dotenv").config(); // sets up the .env file
-
 const express = require("express");
 const apiRouter = require("./api");
 const morgan = require("morgan");
