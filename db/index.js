@@ -241,7 +241,7 @@ const createTags = async (tagList) => {
     await client.query(
       `
         INSERT INTO tags(name)
-        VALUES (${insertValues})
+        VALUES (${insertValues}) 
         ON CONFLICT (name) DO NOTHING
     `,
       tagList
