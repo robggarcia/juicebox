@@ -1,10 +1,12 @@
 const { Client } = require("pg");
 
-const client = new Client({
-  password: process.env.POSTGRES_SECRET,
-  user: "postgres",
-  database: "juicebox",
-});
+const client = new Client(
+  process.env.DATABASE_URL || {
+    password: process.env.POSTGRES_SECRET,
+    user: "postgres",
+    database: "juicebox",
+  }
+);
 
 // USER Methods
 
