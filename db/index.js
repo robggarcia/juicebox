@@ -1,7 +1,7 @@
 const { Client } = require("pg");
 
 const client = new Client({
-  password: "postgres",
+  password: process.env.POSTGRES_SECRET,
   user: "postgres",
   database: "juicebox",
 });

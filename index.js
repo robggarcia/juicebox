@@ -3,8 +3,6 @@ const express = require("express");
 const apiRouter = require("./api");
 const morgan = require("morgan");
 
-const PORT = 3000;
-
 // connect to you database
 const { client } = require("./db");
 client.connect();
@@ -16,6 +14,7 @@ server.use(express.json());
 
 server.use("/api", apiRouter);
 
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`The server is up on PORT ${PORT}`);
 });
