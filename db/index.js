@@ -1,11 +1,18 @@
 const { Client } = require("pg");
 
 const client = new Client(
-  process.env.DATABASE_URL || {
-    password: process.env.POSTGRES_SECRET,
-    user: "postgres",
-    database: "juicebox",
-  }
+  process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : {
+        password: process.env.POSTGRES_SECRET,
+        user: "postgres",
+        database: "juicebox",
+      }
 );
 
 // USER Methods
