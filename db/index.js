@@ -15,7 +15,7 @@ const client = new Client(
       }
 );
 
-// USER Methods
+// USER Methods //
 
 const createUser = async ({ username, password, name, location }) => {
   try {
@@ -158,7 +158,7 @@ const activateUserByUserId = async (userId) => {
   }
 };
 
-// POST Methods
+// POST Methods //
 
 const createPost = async ({ authorId, title, content, tags = [] }) => {
   try {
@@ -274,73 +274,6 @@ const getPostsByUser = async (userId) => {
   }
 };
 
-const createTags = async (tagList) => {
-  if (tagList.length === 0) return;
-
-  // create a string to create as many tags as we need. Format needed: $1), ($2), ($3)
-  const insertValues = tagList.map((_, i) => `$${i + 1}`).join(`), (`);
-  // then we can use (${ insertValues }) in our string template
-
-  // need something like $1, $2, $3
-  const selectValues = tagList.map((_, i) => `$${i + 1}`).join(", ");
-  // then we can use (${ selectValues }) in our string template
-
-  try {
-    // first insert the tags into the tags table
-    await client.query(
-      `
-        INSERT INTO tags(name)
-        VALUES (${insertValues}) 
-        ON CONFLICT (name) DO NOTHING
-    `,
-      tagList
-    );
-
-    // then select all the tags passed in from the table and return them
-    const { rows } = await client.query(
-      `
-      SELECT * FROM tags
-      WHERE name
-      IN (${selectValues})
-    `,
-      tagList
-    );
-
-    return rows;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const createPostTag = async (postId, tagId) => {
-  try {
-    await client.query(
-      `
-      INSERT INTO post_tags("postId", "tagId")
-      VALUES ($1, $2)
-      ON CONFLICT ("postId", "tagId") DO NOTHING;
-    `,
-      [postId, tagId]
-    );
-  } catch (error) {
-    throw error;
-  }
-};
-
-const addTagsToPost = async (postId, tagList) => {
-  try {
-    const createPostTagPromises = tagList.map((tag) =>
-      createPostTag(postId, tag.id)
-    );
-
-    await Promise.all(createPostTagPromises);
-
-    return await getPostById(postId);
-  } catch (error) {
-    throw error;
-  }
-};
-
 const getPostById = async (postId) => {
   try {
     const {
@@ -405,6 +338,75 @@ const getPostsByTagName = async (tagName) => {
 
     console.log("postIds", postIds);
     return await Promise.all(postIds.map((post) => getPostById(post.id)));
+  } catch (error) {
+    throw error;
+  }
+};
+
+// TAG Methods //
+
+const createTags = async (tagList) => {
+  if (tagList.length === 0) return;
+
+  // create a string to create as many tags as we need. Format needed: $1), ($2), ($3)
+  const insertValues = tagList.map((_, i) => `$${i + 1}`).join(`), (`);
+  // then we can use (${ insertValues }) in our string template
+
+  // need something like $1, $2, $3
+  const selectValues = tagList.map((_, i) => `$${i + 1}`).join(", ");
+  // then we can use (${ selectValues }) in our string template
+
+  try {
+    // first insert the tags into the tags table
+    await client.query(
+      `
+        INSERT INTO tags(name)
+        VALUES (${insertValues}) 
+        ON CONFLICT (name) DO NOTHING
+    `,
+      tagList
+    );
+
+    // then select all the tags passed in from the table and return them
+    const { rows } = await client.query(
+      `
+      SELECT * FROM tags
+      WHERE name
+      IN (${selectValues})
+    `,
+      tagList
+    );
+
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createPostTag = async (postId, tagId) => {
+  try {
+    await client.query(
+      `
+      INSERT INTO post_tags("postId", "tagId")
+      VALUES ($1, $2)
+      ON CONFLICT ("postId", "tagId") DO NOTHING;
+    `,
+      [postId, tagId]
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+const addTagsToPost = async (postId, tagList) => {
+  try {
+    const createPostTagPromises = tagList.map((tag) =>
+      createPostTag(postId, tag.id)
+    );
+
+    await Promise.all(createPostTagPromises);
+
+    return await getPostById(postId);
   } catch (error) {
     throw error;
   }
