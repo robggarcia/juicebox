@@ -1,5 +1,4 @@
 const express = require("express");
-const { reset } = require("nodemon");
 const { getAllPosts, createPost, getPostById, updatePost } = require("../db");
 const { requireUser } = require("./utils");
 const postsRouter = express.Router();
