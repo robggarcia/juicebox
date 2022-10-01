@@ -175,7 +175,7 @@ const rebuildDB = async () => {
     await createTables();
     await createInitialUsers();
     await createInitialPosts();
-    // await createInitialTags();
+    await createInitialTags();
   } catch (error) {
     console.error("Error during rebuildDB");
     throw error;
