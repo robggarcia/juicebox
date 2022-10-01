@@ -118,6 +118,46 @@ const getUserByUsername = async (username) => {
   }
 };
 
+const deleteUserByUserId = async (userId) => {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      UPDATE users
+      SET ACTIVE = false
+      WHERE users.id=$1
+      RETURNING *;
+      `,
+      [userId]
+    );
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const activateUserByUserId = async (userId) => {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      UPDATE users
+      SET ACTIVE = true
+      WHERE users.id=$1
+      RETURNING *;
+      `,
+      [userId]
+    );
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // POST Methods
 
 const createPost = async ({ authorId, title, content, tags = [] }) => {
@@ -332,7 +372,7 @@ const getPostById = async (postId) => {
       rows: [author],
     } = await client.query(
       `
-        SELECT id, username, name, location
+        SELECT id, username, name, location, active
         FROM users
         WHERE id=$1;
       `,
@@ -398,4 +438,6 @@ module.exports = {
   getPostsByTagName,
   getAllTags,
   getUserByUsername,
+  deleteUserByUserId,
+  activateUserByUserId,
 };

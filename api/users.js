@@ -1,7 +1,14 @@
 const express = require("express");
-const { getAllUsers, getUserByUsername, createUser } = require("../db");
+const {
+  getAllUsers,
+  getUserByUsername,
+  createUser,
+  deleteUserByUserId,
+  activateUserByUserId,
+} = require("../db");
 const usersRouter = express.Router();
 const jwt = require("jsonwebtoken");
+const { requireUser } = require("./utils");
 const { JWT_SECRET } = process.env;
 
 usersRouter.use((req, res, next) => {
@@ -94,5 +101,47 @@ usersRouter.post("/login", async (req, res, next) => {
 });
 
 // DELETE /api/users/:id
+usersRouter.delete("/:userId", requireUser, async (req, res, next) => {
+  try {
+    if (req.user.id === +req.params.userId) {
+      const user = await deleteUserByUserId(req.params.userId);
+      res.send({
+        success: true,
+        message: "You have successfully deactivated user",
+        user: user,
+      });
+    } else {
+      res.send({
+        success: false,
+        message:
+          "Deactivate user failed. Users can only deactivate their own account",
+      });
+    }
+  } catch ({ name, message }) {
+    next({ success: false, name, message });
+  }
+});
+
+// PATCH /api/users/:userId
+usersRouter.patch("/:userId", requireUser, async (req, res, next) => {
+  try {
+    if (req.user.id === +req.params.userId) {
+      const user = await activateUserByUserId(req.params.userId);
+      res.send({
+        success: true,
+        message: "You have successfully activated user",
+        user: user,
+      });
+    } else {
+      res.send({
+        success: false,
+        message:
+          "Activate user failed. Users can only activate their own account",
+      });
+    }
+  } catch ({ name, message }) {
+    next({ success: false, name, message });
+  }
+});
 
 module.exports = usersRouter;

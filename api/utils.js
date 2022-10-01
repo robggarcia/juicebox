@@ -8,4 +8,14 @@ const requireUser = (req, res, next) => {
   next();
 };
 
-module.exports = { requireUser };
+const requireActiveUser = (req, res, next) => {
+  if (!req.user.active) {
+    next({
+      name: "InactiveUserError",
+      message: "You must be an active user to perform this action",
+    });
+  }
+  next();
+};
+
+module.exports = { requireUser, requireActiveUser };
