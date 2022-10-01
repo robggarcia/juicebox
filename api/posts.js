@@ -4,7 +4,7 @@ const { requireUser } = require("./utils");
 const postsRouter = express.Router();
 
 // GET /api/posts
-postsRouter.get("/", async (req, res) => {
+postsRouter.get("/", async (req, res, next) => {
   try {
     const allPosts = await getAllPosts();
 
